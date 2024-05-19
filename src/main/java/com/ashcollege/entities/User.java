@@ -1,52 +1,68 @@
 package com.ashcollege.entities;
 
-import java.util.ArrayList;
+import com.ashcollege.utils.PublicFunction;
+
+import java.util.Date;
 import java.util.List;
 
 public class User {
     private int id;
-    private String username;
-    private String password;
-    private String secret;
-    private College college;
+    private String email;
+    private String token;
+    private double balance;
+//    private List<Bet> bets;
+    private Date lastActivity;
 
-    public User(int id, String username, String password) {
+    public User(int id, String username,String password) {
         this(username, password);
         this.id = id;
+        this.lastActivity=new Date();
     }
 
-    public User(String username, String password) {
-        this.username = username;
-        this.password = password;
+    public Date getLastActivity() {
+        return lastActivity;
+    }
+
+    public void setLastActivity(Date lastActivity) {
+        this.lastActivity = lastActivity;
+    }
+
+    public User(String email, String password) {
+        this.email = email;
+        this.token = PublicFunction.createHash(email,password);
+        this.lastActivity= new Date();
+    }
+    public User (User other){
+        this.email= other.email;
+        this.token= other.token;
+        this.balance= other.balance;
+        if (other.lastActivity!=null){
+            this.lastActivity=other.lastActivity;
+        }
+        else {
+            this.lastActivity=new Date();
+        }
+        this.id= other.id;
     }
 
     public User() {
 
     }
 
-
-    public String getUsername() {
-        return username;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public String getToken() {
+        return token;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public boolean isSameUsername (String username) {
-        return this.username.equals(username);
-    }
-
-    public boolean isSameCreds (String username, String password) {
-        return this.username.equals(username) && this.password.equals(password);
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public int getId() {
@@ -56,20 +72,22 @@ public class User {
     public void setId(int id) {
         this.id = id;
     }
-
-    public String getSecret() {
-        return secret;
+    public double getBalance() {
+        return balance;
     }
 
-    public void setSecret(String secret) {
-        this.secret = secret;
+    public void setBalance(double balance) {
+        this.balance = balance;
     }
 
-    public College getCollege() {
-        return college;
-    }
+//    public List<Bet> getBets() {
+//        return bets;
+//    }
+//
+//    public void setBets(List<Bet> bets) {
+//        this.bets = bets;
+//    }
 
-    public void setCollege(College college) {
-        this.college = college;
-    }
+
 }
+

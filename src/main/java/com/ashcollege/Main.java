@@ -1,5 +1,7 @@
 package com.ashcollege;
 
+import com.ashcollege.generetor.LeagueGenerator;
+import com.ashcollege.service.Persist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;

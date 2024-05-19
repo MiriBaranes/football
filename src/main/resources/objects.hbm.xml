@@ -1,60 +1,142 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
         "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+
 <hibernate-mapping>
 
 
-    <!--example-->
-    <class name="com.ashcollege.entities.Client" table="clients" lazy="false">
-        <id name="id" type="int" column="id">
-            <generator class="native"/>
-        </id>
-        <property name="firstName" type="string" column="first_name"/>
-        <property name="lastName" type="string" column="last_name"/>
-    </class>
-
-    <class name="com.ashcollege.entities.Student" table="students" lazy="false">
-        <id name="id" type="int" column="id">
-            <generator class="native"/>
-        </id>
-        <property name="firstName" type="string" column="first_name"/>
-        <property name="lastName" type="string" column="last_name"/>
-        <property name="grade" type="int" column="grade"/>
-        <property name="age" type="int" column="age"/>
-        <property name="department" type="string" column="department"/>
-    </class>
 
     <class name="com.ashcollege.entities.User" table="users" lazy="false">
         <id name="id" type="int" column="id">
             <generator class="native"/>
         </id>
-        <property name="username" type="string" column="username"/>
-        <property name="password" type="string" column="password"/>
-        <property name="secret" type="string" column="secret"/>
-        <many-to-one name="college" column="college_id"
-                     class="com.ashcollege.entities.College"/>
+        <property name="lastActivity" type="java.util.Date" column="last_activity"/>
+        <property name="email" type="string" column="email"/>
+        <property name="token" type="string" column="token"/>
+        <property name="balance" type="double" column="balance"/>
     </class>
 
-    <class name="com.ashcollege.entities.Note" table="notes" lazy="false">
+    <class name="com.ashcollege.entities.BetsForm" table="bets_form" lazy="false">
         <id name="id" type="int" column="id">
             <generator class="native"/>
         </id>
-        <property name="content" type="string" column="content"/>
-        <property name="date" type="java.util.Date" column="date"/>
+        <property name="winn" type="java.lang.Boolean" column="is_winn"/>
+        <many-to-one name="owner" column="owner_id" class="com.ashcollege.entities.User"/>
+        <many-to-one name="play" column="play_id" class="com.ashcollege.entities.Play"/>
+        <property name="moneyBet" type="double" column="money_bet"/>
+        <property name="betType" type="int" column="bet_type"/>
+
+    </class>
+
+
+    <class name="com.ashcollege.entities.Play" table="plays" lazy="false">
+        <id name="id" type="int" column="id">
+            <generator class="native"/>
+        </id>
+        <property name="doneDate" type="java.util.Date" column="done_date"/>
+        <property name="temperature" type="int" column="temperature"/>
+        <set name="goals" table="goals" inverse="true" cascade="save-update" lazy="true" fetch="select">
+            <key>
+                <column name="play_id" not-null="true"/>
+            </key>
+            <one-to-many class="com.ashcollege.entities.Goal"/>
+        </set>
+        <property name="homeTeamWin" type="double" column="home_team_win"/>
+        <property name="awayTeamWin" type="double" column="away_team_win"/>
+        <property name="draw" type="double" column="draw"/>
+        <!--        <property name="date" type="java.util.Date" column="date"/>-->
+
+        <many-to-one name="homeTeam" column="home_id"
+                     class="com.ashcollege.entities.Team"/>
+        <many-to-one name="awayTeam" column="away_id"
+                     class="com.ashcollege.entities.Team"/>
+        <many-to-one name="round" column="round_id"
+                     class="com.ashcollege.entities.Round"/>
+    </class>
+
+    <class name="com.ashcollege.entities.Round" table="rounds" lazy="false">
+        <id name="id" type="int" column="id">
+            <generator class="native"/>
+        </id>
+        <property name="startTime" type="java.util.Date" column="start_time"/>
+        <property name="endTime" type="java.util.Date" column="end_time"/>
+        <many-to-one name="league" column="league_id"
+                     class="com.ashcollege.entities.League"/>
+    </class>
+    <class name="com.ashcollege.entities.League" table="leagues" lazy="false">
+        <id name="id" type="int" column="id">
+            <generator class="native"/>
+        </id>
+        <property name="leagueName" type="java.lang.String" column="name"/>
+                <set name="teams" table="league_team_map"  fetch="select" cascade="merge">
+                    <key column="league_id"/>
+                    <many-to-many class="com.ashcollege.entities.Team" column="team_id" />
+                </set>
+
+    </class>
+    <class name="com.ashcollege.entities.Goal" table="goals" lazy="false">
+        <id name="id" type="int" column="id">
+            <generator class="native"/>
+        </id>
+        <property name="time" type="java.lang.String" column="time"/>
+        <property name="homeGoal" type="boolean" column="is_home_goal"/>
+        <many-to-one name="play" class="com.ashcollege.entities.Play" fetch="select">
+            <column name="play_id" not-null="true"/>
+        </many-to-one>
         <many-to-one name="owner" column="owner_id"
-                     class="com.ashcollege.entities.User"/>
+                     class="com.ashcollege.entities.Player"/>
     </class>
 
-    <class name="com.ashcollege.entities.College" table="colleges" lazy="false">
+
+    <class name="com.ashcollege.entities.Team" table="teams" lazy="false">
         <id name="id" type="int" column="id">
             <generator class="native"/>
         </id>
-        <property name="name" type="string" column="name"/>
-    </class>
+        <property name="name" type="string" unique="true" column="name"/>
+        <property name="score" type="double" column="score"/>
+        <!--        <property name="numberOfInjuredPlayers" type="int" column="number_injured" />-->
+        <set name="playerMapTeams" table="player_map_team" inverse="true" cascade="save-update" lazy="true"
+             fetch="select">
+            <key>
+                <column name="team_id" not-null="true"/>
+            </key>
+            <one-to-many class="com.ashcollege.entities.PlayerMapTeam"/>
+        </set>
+        <set name="leagues" table="league_team_map"  fetch="select" cascade="merge">
+            <key column="team_id"/>
+            <many-to-many class="com.ashcollege.entities.League" column="league_id" />
+        </set>
 
-    <!--    example2-->
-    <!--    <many-to-one name="object" column="object_id"-->
-    <!--                 class="com.ashcollege.entities.OtherClass"/>-->
+    </class>
+    <class name="com.ashcollege.entities.Player" table="players" lazy="false">
+        <id name="id" type="int" column="id">
+            <generator class="native"/>
+        </id>
+        <property name="firstName" type="string" column="first_name"/>
+        <property name="lastName" type="string" column="last_name"/>
+        <property name="injured" type="boolean" column="is_injured"/>
+        <set name="playerMapTeams" table="player_map_team" inverse="true" cascade="save-update" lazy="true"
+             fetch="select">
+            <key>
+                <column name="player_id" not-null="true"/>
+            </key>
+            <one-to-many class="com.ashcollege.entities.PlayerMapTeam"/>
+        </set>
+
+
+    </class>
+    <class name="com.ashcollege.entities.PlayerMapTeam" table="player_map_team" lazy="false">
+        <id name="id" type="int" column="id">
+            <generator class="native"/>
+        </id>
+        <many-to-one name="player" column="player_id"
+                     class="com.ashcollege.entities.Player"/>
+        <many-to-one name="team" column="team_id"
+                     class="com.ashcollege.entities.Team"/>
+        <property name="created" type="java.util.Date" column="created_at"/>
+        <property name="deleted" type="java.util.Date" column="deleted_at"/>
+    </class>
 
 
 </hibernate-mapping>
